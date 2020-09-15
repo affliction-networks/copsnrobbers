@@ -1,4 +1,4 @@
-# copsnrobbers
+# Cops N' Robbers
 Cops N' Robbers GameMode
 
 
