@@ -1,7 +1,7 @@
 ﻿using CitizenFX.Core;
 using IniParser;
 using IniParser.Model;
-using Server.Configs;
+using ServiceStack.Redis;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +14,9 @@ namespace Server
 {
     public class ServerMain : BaseScript
     {
+
+        public int serverID = 0;
+
         public ServerMain()
         {
             Debug.WriteLine("Cops N` Robbers Framework by Hammer");
@@ -33,6 +36,32 @@ namespace Server
             Debug.WriteLine("Loaded database configuration.");
             // End Load Database Config
 
+            string rawHosts = data["Database"]["hosts"];
+            Configs.Database.hosts = rawHosts.Split(',');
+            foreach(string addedhost in Configs.Database.hosts)
+            {
+                Debug.WriteLine("Added database host... " + addedhost);
+            }
+
+            Configs.Database.password = data["Database"]["password"];
+
+            Debug.WriteLine("Database information loaded. Now establishing database connection variables...");
+            Configs.Database.manager = new PooledRedisClientManager(Configs.Database.hosts, Configs.Database.hosts,
+                new RedisClientManagerConfig
+                {
+                    MaxWritePoolSize = Configs.Database.hosts.Length,
+                    MaxReadPoolSize = Configs.Database.hosts.Length,
+                    AutoStart = false
+                });
+            Debug.WriteLine("Done setting up database connection variables.");
+            try
+            {
+                serverID = int.Parse(data["Main"]["serverid"]);
+            }catch(Exception ex)
+            {
+                Debug.WriteLine("Server ID specified in config invalid.");
+                return;
+            }
 
         }
     }

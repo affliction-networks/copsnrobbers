@@ -55,4 +55,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy $(ProjectDir)\ref . /s /e /K /D /H /Y</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetDir) $(SolutionDir)\Final /s /e /K /D /H /Y
+del /F $(SolutionDir)\Final\CitizenFX.*
+del /F $(SolutionDir)\Final\*.pdb
+del /F $(SolutionDir)\Final\*.xml</PostBuildEvent>
+  </PropertyGroup>
 </Project>
